@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT FAQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1>Assistente de FAQ</h1>
+        </header>
+        <main class="chat-box" id="chat-box">
+            <p class="chatbot-msg">Olá! Como posso ajudar você hoje?</p>
+        </main>
+
+        <div id="loading" class="loading" style="display: none;">Processando...</div>
+        <div class="chat-input">
+            <input type="text" id="question-input" placeholder="Digite sua pergunta...">
+            <button onclick="sendQuestion()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendQuestion() {
+            const question = document.getElementById('question-input').value.trim();
+            const chatBox = document.getElementById('chat-box');
+            const loadingIndicator = document.getElementById('loading');
+
+            if (!question) {
+                alert("Digite uma pergunta!");
+                return;
+            }
+
+            chatBox.innerHTML += `<p class="user-msg"><strong>Você:</strong> ${question}</p>`;
+            document.getElementById('question-input').value = '';
+
+            loadingIndicator.style.display = 'block';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await response.json();
+
+                chatBox.innerHTML += `<p class="chatbot-msg"><strong>Assistente:</strong> ${data.solution}</p>`;
+                chatBox.innerHTML += `
+                    <div class="feedback">
+                        <p>Essa resposta foi útil?</p>
+                        <button onclick="sendFeedback('${encodeURIComponent(question)}', 'sim', this)">Sim</button>
+                        <button onclick="sendFeedback('${encodeURIComponent(question)}', 'não', this)">Não</button>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<p class="chatbot-msg">Desculpe, houve um erro ao processar sua pergunta.</p>`;
+                console.error("Erro ao enviar pergunta:", error);
+            } finally {
+
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        async function sendFeedback(question, feedback, button) {
+            const chatBox = document.getElementById('chat-box');
+
+            const buttons = button.parentElement.querySelectorAll("button");
+            buttons.forEach(btn => btn.disabled = true);
+
+            try {
+                const response = await fetch('/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: decodeURIComponent(question), feedback })
+                });
+
+                const result = await response.json();
+
+                chatBox.innerHTML += `<p class="chatbot-msg"><em>${result.status}</em></p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<p class="chatbot-msg"><em>Erro ao enviar feedback. Tente novamente mais tarde.</em></p>`;
+                console.error("Erro ao enviar feedback:", error);
+            }
+        }
+    </script>
+</body>
+</html>
