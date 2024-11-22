@@ -8,7 +8,7 @@ from chatbot import find_top_3, faqs_df
 CACHE_FILE = "cache.csv"
 app = Flask(__name__)
 
-openai.api_key = "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"
+openai.api_key = ""
 
 def load_cache():
     cache = {}
