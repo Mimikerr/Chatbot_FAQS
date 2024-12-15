@@ -10,25 +10,22 @@ Permite que usuários forneçam feedback (positivo ou negativo) para melhorar a 
 
 Interface responsiva para interação com o chatbot.
 
-##Requisitos do Sistema
+Requisitos de Instalação
+Certifique-se de ter instalado o Python 3.8 ou superior.
 
-###Dependências
-Python 3.8 ou superior
+Instale as Bibliotecas Necessárias: Execute o seguinte comando para instalar todas as dependências do projeto:
 
-Bibliotecas Python:
+bash
 
-Flask
+pip install flask torch transformers pandas scikit-learn pyodbc openai
+Configuração Adicional:
 
-pandas
+Banco de Dados: Certifique-se de ter o Microsoft Access instalado ou o driver ODBC correto configurado no sistema para acesso ao arquivo FAQS_LIMPOS.mdb.
+API GPT: Obtenha uma chave API válida do OpenAI em https://platform.openai.com/ e insira no arquivo app.py:
+python
+openai.api_key = "SUA_API_KEY"
+Driver ODBC: Verifique se o driver Microsoft Access Driver (*.mdb, *.accdb) está instalado no sistema.
+Certifique-se do Espaço em Disco:
 
-pyodbc
-
-openai
-
-scikit-learn
-
-##Instalação das Dependências
-
-Execute o seguinte comando para instalar todas as dependências:
-
-pip install flask pandas pyodbc openai scikit-learn
+O modelo Hugging Face (neuralmind/bert-base-portuguese-cased) será baixado automaticamente, ocupando aproximadamente 500MB no cache.
+Se tiver problemas com a instalação, entre em contato com o responsável técnico do projeto. 😊
